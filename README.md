@@ -1,70 +1,211 @@
-# Getting Started with Create React App
+# Global Payments HPP / REST Sample Server
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A lightweight Express.js backend that demonstrates how to integrate **Global Payments (Realex)** Hosted Payment Page (HPP) and REST APIs. It exposes JSON endpoints for creating HPP sessions, looking up transactions, issuing refunds, and more. The server also spins up an **ngrok** tunnel so you can test end-to-end flows from any device.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+* **Create Session** – Generates the signed payload required for the Global Payments HPP.
+* **Transaction Lookup** – Queries an order via the REST API.
+* **Refund & Void** – XML-based rebate/void requests with SHA-1 signatures.
+* **Automatic Logging** – All activity is written to `./data/transactions.json`.
+* **ngrok Support** – Public HTTPS URL for local testing.
+* **Static Front-End** – Anything in `/public` is served automatically.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Folder Structure
 
-### `npm test`
+```
+.
+├── rest-server.js        # ← The server described in this README
+├── public/               # Optional front-end assets (HTML, JS, CSS)
+├── data/
+│   ├── transactions.json # Rolling log created at runtime
+│   └── logs/             # Saved XML/REST payloads (via /api/gp/save-log)
+└── .env                  # Your private credentials (never commit!)
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Prerequisites
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Tool | Minimum Version | Notes |
+|------|-----------------|-------|
+| Node.js | 18 LTS | Uses ES modules & async functions |
+| npm or yarn | latest | Only runtime deps: **express**, **axios**, **cors**, **dotenv**, **ngrok** |
+| A Global Payments (Realex) account | — | Credentials for test or live environment |
+| NGROK account is required | - | https://ngrok.com |
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Environment Variables (`.env`)
 
-### `npm run eject`
+```dotenv
+# Required – your merchant credentials
+GP_MERCHANT_ID=your_merchant_id
+GP_ACCOUNT=internet
+GP_SHARED_SECRET=super_secret_hash
+GP_ENV=live   # or sandbox
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Required for REST calls & transaction lookup
+GP_API_KEY=your_rest_api_key
+GP_BASE_URL=https://api.globalpay.com/gp
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Optional
+PORT=4242   # Defaults to 4242 if omitted
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+> **Tip:** Never commit `.env` – add it to `.gitignore`.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## Installation & Run
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+# 1. Clone the repo
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# 2. Install deps
+$ npm install    # or yarn
 
-### Code Splitting
+# 3. Create .env with the vars above
+$ cp .env.example .env
+$ nano .env      # fill in your creds
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# 4. Start the server
+$ node rest-server.js
 
-### Analyzing the Bundle Size
+# 5. Note the ngrok URL in the console – that’s your public callback base.
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Once running you’ll see something like:
 
-### Making a Progressive Web App
+```
+✅ REST server running on http://localhost:4242
+⏳ ngrok status: connected
+🌍 Public URL via ngrok: https://ab12-34-56-78-90.ngrok-free.app
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## API Reference
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+All endpoints are prefixed with `/api/gp/`.
 
-### Deployment
+### 1. Create Session
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
+POST /api/gp/create-session
+{
+  "amount": "4999",     // optional – default 4999
+  "currency": "EUR"      // optional – default EUR
+}
+```
+Response
+```json
+{
+  "MERCHANT_ID": "...",
+  "ORDER_ID": "order1678892340000",
+  "SHA1HASH": "...",
+  "MERCHANT_RESPONSE_URL": "https://<ngrok>/return.html",
+  ...etc
+}
+```
+Embed the JSON in your HPP form or redirect script.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### 2. Transaction Lookup (REST)
+
+```
+POST /api/gp/get-transaction
+{
+  "orderId": "order1678892340000"
+}
+```
+Server forwards the call to `GET {GP_BASE_URL}/v1/{MERCHANT_ID}/orders/{orderId}` and returns the REST payload.
+
+---
+
+### 3. Refund (XML rebate)
+
+```
+POST /api/gp/refund
+{
+  "orderId":   "order1678892340000",
+  "pasref":    "123456789",
+  "authcode":  "A1B2C3",
+  "amount":    "4999",
+  "currency":  "EUR"
+}
+```
+Returns raw XML - useful for debugging.
+
+---
+
+### 4. Void
+
+```
+POST /api/gp/void
+{
+  "orderId": "order1678892340000",
+  "pasref":  "123456789"
+}
+```
+---
+
+### 5. Capture
+
+```
+POST /api/gp/capture   # => 400 – Not supported in HPP auto-settle mode
+```
+---
+
+### 6. All Transactions (local log)
+
+```
+GET /api/gp/all-transactions
+```
+Returns the content of `./data/transactions.json`.
+
+---
+
+### 7. Save Log
+
+```
+POST /api/gp/save-log
+{
+  "log": "…XML or JSON…"
+}
+```
+Server writes the payload to `./data/logs/realex-log-<timestamp>.txt`.
+
+---
+
+## Front-End Callback Pages
+
+`return.html` and `fail.html` inside the `/public` folder receive the HPP redirect. Edit them to suit your UI.
+
+---
+
+## Development Tips
+
+* **Hot reload** – use [`nodemon`](https://github.com/remy/nodemon) for auto-restart.
+* **Testing** – pair with [ngrok inspect](https://ngrok.com/docs/inspect) to replay callbacks.
+* **Currency / amount** – values must be **minor units** (e.g. €50.00 → `5000`).
+* **SHA-1 deprecation** – Global Payments still requires SHA-1 for legacy flows; don’t reuse this pattern elsewhere.
+
+---
+
+## Security Notes
+
+* Keep `GP_SHARED_SECRET` & `GP_API_KEY` out of source control.
+* Limit `GP_API_KEY` to the lowest scope needed.
+* Use HTTPS in production – ngrok is just for demos.
+
+---
+
+## License
+
+MIT – do whatever you want, but **no warranty**. See `LICENSE` file.
