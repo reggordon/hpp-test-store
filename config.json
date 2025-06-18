@@ -1,0 +1,4 @@
+{
+  "currencies": ["EUR", "USD", "GBP", "AUD", "CAD"],
+  "apms": ["CARD", "SEPA", "IDEAL", "ALIPAY"]
+}

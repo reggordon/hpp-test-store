@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment Failed</title>
+</head>
+<body>
+  <h1>❌ Payment Failed</h1>
+  <div id="status">Processing...</div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("ORDER_ID") || "unknown";
+    const result = params.get("RESULT");
+    const message = params.get("MESSAGE");ngr
+    document.getElementById("status").innerText = `Order ${orderId} failed with result: ${result}`;
+
+    // Log failure
+    fetch("/api/gp/hpp-return", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId, result, message, success: false })
+    }).then(() => {
+      console.log("⚠️ Failure logged.");
+    }).catch(err => {
+      console.error("❌ Failed to log failure:", err);
+    });
+  </script>
+</body>
+</html>

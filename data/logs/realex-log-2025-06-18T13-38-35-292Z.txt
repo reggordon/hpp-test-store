@@ -1,0 +1,23 @@
+[2025-06-18T13:38:35.269Z] Creating session...
+{
+  "amount": "4999",
+  "currency": "EUR",
+  "customerEmail": "",
+  "comment": ""
+}
+
+[2025-06-18T13:38:35.290Z] Received session payload:
+{
+  "MERCHANT_ID": "regtest",
+  "ACCOUNT": "wallets",
+  "ORDER_ID": "order1750253915286",
+  "AMOUNT": "4999",
+  "CURRENCY": "EUR",
+  "TIMESTAMP": "20250618133835",
+  "SHA1HASH": "56c96cdc8114627161ba2f23a3d7a9fdbf407437",
+  "AUTO_SETTLE_FLAG": "1",
+  "MERCHANT_RESPONSE_URL": "https://70a4-2a06-5900-526-3300-d5df-8347-54e-250f.ngrok-free.app/return.html",
+  "MERCHANT_FAILURE_URL": "https://70a4-2a06-5900-526-3300-d5df-8347-54e-250f.ngrok-free.app/fail.html"
+}
+
+[2025-06-18T13:38:35.291Z] Saving log before submitting form...

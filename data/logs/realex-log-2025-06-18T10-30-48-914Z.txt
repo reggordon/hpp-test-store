@@ -1,0 +1,84 @@
+[2025-06-18T10:30:06.837Z] Creating session...
+{
+  "amount": "1000",
+  "currency": "EUR",
+  "orderId": "test-1234",
+  "customerEmail": "testing@gmail.com",
+  "comment": "testing"
+}
+
+[2025-06-18T10:30:06.844Z] Received session payload:
+{
+  "MERCHANT_ID": "regtest",
+  "ACCOUNT": "wallets",
+  "ORDER_ID": "order1750242606842",
+  "AMOUNT": "1000",
+  "CURRENCY": "EUR",
+  "TIMESTAMP": "20250618103006",
+  "SHA1HASH": "cd29562e165f88091856e8166fc4cca9019a7945",
+  "AUTO_SETTLE_FLAG": "1"
+}
+
+[2025-06-18T10:30:06.845Z] Saving log before submitting form...
+
+[2025-06-18T10:30:06.850Z] ✅ Log saved to server:
+{
+  "message": "Log saved",
+  "file": "/Users/reggordon/basic-store/data/logs/realex-log-2025-06-18T10-30-06-847Z.txt"
+}
+
+[2025-06-18T10:30:07.151Z] Redirecting to Realex payment page...
+
+[2025-06-18T10:30:24.132Z] Creating session...
+{
+  "amount": "1000",
+  "currency": "EUR",
+  "orderId": "testtifngr45",
+  "customerEmail": "testing@gmail.com",
+  "comment": "testing"
+}
+
+[2025-06-18T10:30:24.140Z] Received session payload:
+{
+  "MERCHANT_ID": "regtest",
+  "ACCOUNT": "wallets",
+  "ORDER_ID": "order1750242624137",
+  "AMOUNT": "1000",
+  "CURRENCY": "EUR",
+  "TIMESTAMP": "20250618103024",
+  "SHA1HASH": "916048b0b50bff423a865ec422b5c0c264ec7fe6",
+  "AUTO_SETTLE_FLAG": "1"
+}
+
+[2025-06-18T10:30:24.140Z] Saving log before submitting form...
+
+[2025-06-18T10:30:24.145Z] ✅ Log saved to server:
+{
+  "message": "Log saved",
+  "file": "/Users/reggordon/basic-store/data/logs/realex-log-2025-06-18T10-30-24-143Z.txt"
+}
+
+[2025-06-18T10:30:24.447Z] Redirecting to Realex payment page...
+
+[2025-06-18T10:30:48.903Z] Creating session...
+{
+  "amount": "1000",
+  "currency": "EUR",
+  "orderId": "qwert1234",
+  "customerEmail": "testing@gmail.com",
+  "comment": "testing"
+}
+
+[2025-06-18T10:30:48.911Z] Received session payload:
+{
+  "MERCHANT_ID": "regtest",
+  "ACCOUNT": "wallets",
+  "ORDER_ID": "order1750242648908",
+  "AMOUNT": "1000",
+  "CURRENCY": "EUR",
+  "TIMESTAMP": "20250618103048",
+  "SHA1HASH": "efa7a8ff72e1c52bf66c24c1a7f5ff357702f09e",
+  "AUTO_SETTLE_FLAG": "1"
+}
+
+[2025-06-18T10:30:48.911Z] Saving log before submitting form...

@@ -1,0 +1,22 @@
+[2025-06-18T10:24:13.213Z] Creating session...
+{
+  "amount": "1000",
+  "currency": "EUR",
+  "orderId": "test-hop-001",
+  "customerEmail": "test@test.com",
+  "comment": "testing hepp integration"
+}
+
+[2025-06-18T10:24:13.221Z] Received session payload:
+{
+  "MERCHANT_ID": "regtest",
+  "ACCOUNT": "wallets",
+  "ORDER_ID": "order1750242253218",
+  "AMOUNT": "1000",
+  "CURRENCY": "EUR",
+  "TIMESTAMP": "20250618102413",
+  "SHA1HASH": "282d3dea9f18f3659a1fd8387445710ba17ff383",
+  "AUTO_SETTLE_FLAG": "1"
+}
+
+[2025-06-18T10:24:13.221Z] Saving log before submitting form...

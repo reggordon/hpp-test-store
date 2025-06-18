@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Realex Drop-In (Form POST)</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
+    label, input, select, button, textarea { display: block; margin: 0.5rem 0; width: 100%; }
+    #log-output { background: #f4f4f4; border: 1px solid #ccc; padding: 1rem; margin-top: 2rem; white-space: pre-wrap; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h2>Realex Payment</h2>
+
+  <label for="amount">Amount (in cents):</label>
+  <input type="number" id="amount" value="4999" />
+
+  <label for="currency">Currency:</label>
+  <select id="currency">
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="USD">USD</option>
+  </select>
+
+  <label for="customerEmail">Customer Email (optional):</label>
+  <input type="email" id="customerEmail" placeholder="email@example.com" />
+
+  <label for="comment">Comment (for internal logging only):</label>
+  <textarea id="comment" rows="3" placeholder="Optional description or tag for this payment"></textarea>
+
+  <button id="pay-btn">Pay</button>
+
+  <div id="log-output">Waiting for user action...</div>
+
+  <script>
+    const logLines = [];
+    const log = (msg, data = null) => {
+      const logEl = document.getElementById('log-output');
+      const timestamp = new Date().toISOString();
+      let entry = `[${timestamp}] ${msg}`;
+      if (data) entry += `\n${JSON.stringify(data, null, 2)}`;
+      logLines.push(entry);
+      logEl.textContent += `\n${entry}`;
+    };
+
+    const saveLogToServer = async () => {
+      try {
+        const res = await fetch('/api/gp/save-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ log: logLines.join('\n\n') })
+        });
+        const result = await res.json();
+        log('✅ Log saved to server:', result);
+      } catch (err) {
+        console.error('❌ Failed to save log to server:', err);
+        log('❌ Failed to save log to server:', err);
+      }
+    };
+
+    document.getElementById('pay-btn').addEventListener('click', async () => {
+      const amount = document.getElementById('amount').value;
+      const currency = document.getElementById('currency').value;
+      const customerEmail = document.getElementById('customerEmail').value.trim();
+      const comment = document.getElementById('comment').value.trim();
+
+      try {
+        log('Creating session...', { amount, currency, customerEmail, comment });
+
+        const resp = await fetch('/api/gp/create-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount, currency })
+        });
+
+        const payload = await resp.json();
+        log('Received session payload:', payload);
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'https://pay.sandbox.realexpayments.com/pay';
+
+        for (const key in payload) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = payload[key];
+          form.appendChild(input);
+        }
+
+        if (comment) {
+          const commentInput = document.createElement('input');
+          commentInput.type = 'hidden';
+          commentInput.name = 'COMMENT1';
+          commentInput.value = comment;
+          form.appendChild(commentInput);
+        }
+
+        if (customerEmail) {
+          const emailInput = document.createElement('input');
+          emailInput.type = 'hidden';
+          emailInput.name = 'CUST_NUM';
+          emailInput.value = customerEmail;
+          form.appendChild(emailInput);
+        }
+
+        document.body.appendChild(form);
+        log('Saving log before submitting form...');
+        await saveLogToServer();
+        setTimeout(() => {
+          log('Redirecting to Realex payment page...');
+          form.submit();
+        }, 300);
+      } catch (err) {
+        console.error('❌ Failed to create session or submit form:', err);
+        log('❌ Failed to create session or submit form:', err);
+        alert('Payment failed to start. See console for details.');
+      }
+    });
+  </script>
+</body>
+</html>

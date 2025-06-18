@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment Success</title>
+</head>
+<body>
+  <h1>✅ Payment Returned</h1>
+  <div id="status">Processing...</div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("ORDER_ID") || "unknown";
+    const result = params.get("RESULT");
+    const message = params.get("MESSAGE");
+
+    document.getElementById("status").innerText = `Order ${orderId} returned with result: ${result}`;
+
+    // Call backend to log the return
+    fetch("/api/gp/hpp-return", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId, result, message, success: true })
+    }).then(() => {
+      console.log("✅ Return logged.");
+    }).catch(err => {
+      console.error("❌ Failed to log return:", err);
+    });
+  </script>
+</body>
+</html>

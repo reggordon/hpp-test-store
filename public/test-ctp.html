@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HPP.init Demo with Click to Pay</title>
+  <script src="https://pay.sandbox.realexpayments.com/payments-hpp.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    #pay-container { margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>Click to Pay (CTP) Demo</h1>
+  <button id="start-payment">Start Payment</button>
+
+  <div id="pay-container"></div>
+
+  <script>
+    document.getElementById('start-payment').addEventListener('click', async () => {
+      try {
+        const resp = await fetch('/api/gp/create-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: '4999', currency: 'EUR' })
+        });
+
+        const payload = await resp.json();
+        console.log('Session payload:', payload);
+
+        HPP.init({
+          selector: '#pay-container',
+          merchantId: payload.MERCHANT_ID,
+          account: payload.ACCOUNT,
+          orderId: payload.ORDER_ID,
+          amount: payload.AMOUNT,
+          currency: payload.CURRENCY,
+          timestamp: payload.TIMESTAMP,
+          sha1hash: payload.SHA1HASH,
+          autoSettleFlag: payload.AUTO_SETTLE_FLAG,
+          channel: 'web',
+          method: 'post',
+          // Additional optional fields to improve CTP behavior
+          customerEmail: 'test@example.com',
+          enableCtp: true,
+
+          onResult: function (result) {
+            console.log('Payment Result:', result);
+            alert('Payment status: ' + result.RESULT);
+          },
+
+          onReady: function () {
+            console.log('HPP.init is ready and rendered.');
+          },
+
+          onError: function (err) {
+            console.error('HPP.init error:', err);
+            alert('Error initializing payment: ' + err);
+          }
+        });
+
+      } catch (err) {
+        console.error('❌ Failed to create session or initialize HPP:', err);
+        alert('Failed to load payment UI. See console.');
+      }
+    });
+  </script>
+</body>
+</html>

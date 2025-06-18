@@ -1,0 +1,51 @@
+[2025-06-18T11:24:37.411Z] Creating session...
+{
+  "amount": "4999",
+  "currency": "EUR",
+  "customerEmail": "",
+  "comment": ""
+}
+
+[2025-06-18T11:24:37.434Z] Received session payload:
+{
+  "MERCHANT_ID": "regtest",
+  "ACCOUNT": "wallets",
+  "ORDER_ID": "order1750245877430",
+  "AMOUNT": "4999",
+  "CURRENCY": "EUR",
+  "TIMESTAMP": "20250618112437",
+  "SHA1HASH": "c42abc01b81b2c0920d083bea63330e9cf15e32f",
+  "AUTO_SETTLE_FLAG": "1"
+}
+
+[2025-06-18T11:24:37.434Z] Saving log before submitting form...
+
+[2025-06-18T11:24:37.448Z] ✅ Log saved to server:
+{
+  "message": "Log saved",
+  "file": "/Users/reggordon/basic-store/data/logs/realex-log-2025-06-18T11-24-37-436Z.txt"
+}
+
+[2025-06-18T11:24:37.749Z] Redirecting to Realex payment page...
+
+[2025-06-18T11:25:46.292Z] Creating session...
+{
+  "amount": "100",
+  "currency": "EUR",
+  "customerEmail": "",
+  "comment": ""
+}
+
+[2025-06-18T11:25:46.301Z] Received session payload:
+{
+  "MERCHANT_ID": "regtest",
+  "ACCOUNT": "wallets",
+  "ORDER_ID": "order1750245946297",
+  "AMOUNT": "100",
+  "CURRENCY": "EUR",
+  "TIMESTAMP": "20250618112546",
+  "SHA1HASH": "58ccc6946ba5202bbd83e2676cae2e0ed04220c7",
+  "AUTO_SETTLE_FLAG": "1"
+}
+
+[2025-06-18T11:25:46.301Z] Saving log before submitting form...

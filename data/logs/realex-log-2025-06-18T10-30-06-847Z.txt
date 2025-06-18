@@ -1,0 +1,22 @@
+[2025-06-18T10:30:06.837Z] Creating session...
+{
+  "amount": "1000",
+  "currency": "EUR",
+  "orderId": "test-1234",
+  "customerEmail": "testing@gmail.com",
+  "comment": "testing"
+}
+
+[2025-06-18T10:30:06.844Z] Received session payload:
+{
+  "MERCHANT_ID": "regtest",
+  "ACCOUNT": "wallets",
+  "ORDER_ID": "order1750242606842",
+  "AMOUNT": "1000",
+  "CURRENCY": "EUR",
+  "TIMESTAMP": "20250618103006",
+  "SHA1HASH": "cd29562e165f88091856e8166fc4cca9019a7945",
+  "AUTO_SETTLE_FLAG": "1"
+}
+
+[2025-06-18T10:30:06.845Z] Saving log before submitting form...

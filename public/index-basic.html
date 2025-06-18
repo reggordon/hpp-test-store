@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Realex Drop-In (Form POST)</title>
+</head>
+<body>
+  <h2>Realex Payment</h2>
+  <button id="pay-btn">Pay €49.99</button>
+
+  <script>
+    document.getElementById('pay-btn').addEventListener('click', async () => {
+      try {
+        const resp = await fetch('/api/gp/create-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: '4999', currency: 'EUR' })
+        });
+
+        const payload = await resp.json();
+        console.log('Received payload:', payload);
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'https://pay.sandbox.realexpayments.com/pay';
+
+        for (const key in payload) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = payload[key];
+          form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+      } catch (err) {
+        console.error('❌ Failed to create session or submit form:', err);
+        alert('Payment failed to start. See console for details.');
+      }
+    });
+  </script>
+</body>
+</html>

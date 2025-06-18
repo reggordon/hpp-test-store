@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Realex HPP UI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input, button { margin: 5px; padding: 8px; }
+    textarea { width: 100%; height: 200px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Realex HPP Tools</h1>
+
+  <div>
+    <h3>Create HPP Session</h3>
+    <input type="number" id="amount" placeholder="Amount (minor)" value="4999">
+    <input type="text" id="currency" placeholder="Currency" value="EUR">
+    <button onclick="createSession()">Create Session</button>
+  </div>
+
+  <div>
+    <h3>Void Transaction</h3>
+    <input type="text" id="voidOrderId" placeholder="Order ID">
+    <input type="text" id="voidPasref" placeholder="Pasref">
+    <button onclick="voidTransaction()">Void</button>
+  </div>
+
+  <div>
+    <h3>Refund Transaction</h3>
+    <input type="text" id="refundOrderId" placeholder="Order ID">
+    <input type="text" id="refundPasref" placeholder="Pasref">
+    <input type="text" id="refundAuthcode" placeholder="Auth Code">
+    <input type="number" id="refundAmount" placeholder="Amount (minor)" value="4999">
+    <input type="text" id="refundCurrency" placeholder="Currency" value="EUR">
+    <button onclick="refundTransaction()">Refund</button>
+  </div>
+
+  <div>
+    <h3>Transaction Logs</h3>
+    <button onclick="getLogs()">Get Logs</button>
+  </div>
+
+  <textarea id="output" readonly></textarea>
+
+  <script>
+    async function apiPost(url, body) {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.text();
+      try {
+        document.getElementById('output').value = JSON.stringify(JSON.parse(data), null, 2);
+      } catch {
+        document.getElementById('output').value = data; // fallback for XML
+      }
+    }
+
+    async function createSession() {
+      const amount = document.getElementById('amount').value;
+      const currency = document.getElementById('currency').value;
+      await apiPost('/api/gp/create-session', { amount, currency });
+    }
+
+    async function voidTransaction() {
+      const orderId = document.getElementById('voidOrderId').value;
+      const pasref = document.getElementById('voidPasref').value;
+      await apiPost('/api/gp/void', { orderId, pasref });
+    }
+
+    async function refundTransaction() {
+      const orderId = document.getElementById('refundOrderId').value;
+      const pasref = document.getElementById('refundPasref').value;
+      const authcode = document.getElementById('refundAuthcode').value;
+      const amount = document.getElementById('refundAmount').value;
+      const currency = document.getElementById('refundCurrency').value;
+      await apiPost('/api/gp/refund', { orderId, pasref, authcode, amount, currency });
+    }
+
+    async function getLogs() {
+      const res = await fetch('/api/gp/all-transactions');
+      const data = await res.json();
+      document.getElementById('output').value = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
